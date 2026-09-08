@@ -1,0 +1,23 @@
+User-agent: *
+
+# ─── Blokir halaman admin dari indexing ──────────────────────────
+Disallow: /dashboard.php
+Disallow: /login.php
+Disallow: /logout.php
+Disallow: /modules/
+Disallow: /config/
+Disallow: /includes/
+Disallow: /database/
+Disallow: /logs/
+Disallow: /.agents/
+Disallow: /.env
+
+# ─── Izinkan halaman publik ───────────────────────────────────────
+Allow: /
+Allow: /index.php
+Allow: /assets/css/
+Allow: /assets/js/
+Allow: /assets/img/
+
+# Sitemap
+Sitemap: /sitemap.xml

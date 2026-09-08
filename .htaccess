@@ -1,0 +1,65 @@
+# Akses options
+Options -Indexes -MultiViews
+
+# ─── Security Headers ──────────────────────────────────────────────
+<IfModule mod_headers.c>
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-XSS-Protection "1; mode=block"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# ─── Blokir file sensitif ──────────────────────────────────────────
+<FilesMatch "\.(env|sql|log|bak|git|gitignore|md|json|lock)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# Blokir akses ke folder tersembunyi
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Blokir akses ke folder .agents, .git, database, logs, config
+  RewriteRule ^\.agents(/.*)?$ - [F,L]
+  RewriteRule ^\.git(/.*)?$ - [F,L]
+  RewriteRule ^database(/.*)?$ - [F,L]
+  RewriteRule ^logs(/.*)?$ - [F,L]
+  RewriteRule ^config/config\.php$ - [F,L]
+
+  # Force HTTPS (aktifkan di production, uncomment baris di bawah)
+  # RewriteCond %{HTTPS} off
+  # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+</IfModule>
+
+# ─── PHP Settings ──────────────────────────────────────────────────
+<IfModule mod_php.c>
+  php_flag display_errors Off
+  php_flag log_errors On
+  php_value error_log logs/error.log
+</IfModule>
+
+# ─── Custom Error Pages ────────────────────────────────────────────
+ErrorDocument 403 /Gudang%20Chat%20Bot/errors/403.php
+ErrorDocument 404 /Gudang%20Chat%20Bot/errors/404.php
+ErrorDocument 500 /Gudang%20Chat%20Bot/errors/500.php
+
+# ─── Cache Static Assets ──────────────────────────────────────────
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css              "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType image/png             "access plus 1 year"
+  ExpiresByType image/jpg             "access plus 1 year"
+  ExpiresByType image/webp            "access plus 1 year"
+  ExpiresByType image/svg+xml         "access plus 1 month"
+</IfModule>
+
+# ─── Charset ───────────────────────────────────────────────────────
+AddDefaultCharset UTF-8

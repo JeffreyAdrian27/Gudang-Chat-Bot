@@ -1,0 +1,21 @@
+# Environment & Secrets
+.env
+config/secrets.php
+
+# Logs
+logs/*.log
+logs/error.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Composer (jika digunakan di masa depan)
+vendor/
+
+# Upload temp
+assets/img/uploads/tmp/
