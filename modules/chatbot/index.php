@@ -38,8 +38,8 @@ $extraCss   = ['/assets/css/chat.css'];
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="/assets/css/style.css">
-  <link rel="stylesheet" href="/assets/css/chat.css">
+  <link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/style.css">
+  <link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/chat.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%236366f1'/><text y='22' x='6' font-size='18' fill='white' font-family='Inter,sans-serif' font-weight='800'>S</text></svg>">
 </head>
 <body>
@@ -57,27 +57,27 @@ $extraCss   = ['/assets/css/chat.css'];
     </div>
     <nav class="sidebar__nav">
       <div class="sidebar__section-label">Menu</div>
-      <a href="/dashboard.php" class="sidebar__link" id="nav-dashboard">
+      <a href="<?= APP_BASE ?>/dashboard.php" class="sidebar__link" id="nav-dashboard">
         <span class="sidebar__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span>
         <span class="sidebar__link-text">Dashboard</span>
       </a>
       <div class="sidebar__section-label">Manajemen</div>
-      <a href="/modules/kategori/index.php" class="sidebar__link" id="nav-kategori">
+      <a href="<?= APP_BASE ?>/modules/kategori/index.php" class="sidebar__link" id="nav-kategori">
         <span class="sidebar__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
         <span class="sidebar__link-text">Kategori</span>
       </a>
-      <a href="/modules/produk/index.php" class="sidebar__link" id="nav-produk">
+      <a href="<?= APP_BASE ?>/modules/produk/index.php" class="sidebar__link" id="nav-produk">
         <span class="sidebar__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span>
         <span class="sidebar__link-text">Produk</span>
       </a>
       <div class="sidebar__section-label">AI</div>
-      <a href="/modules/chatbot/index.php" class="sidebar__link active" id="nav-chatbot" aria-current="page">
+      <a href="<?= APP_BASE ?>/modules/chatbot/index.php" class="sidebar__link active" id="nav-chatbot" aria-current="page">
         <span class="sidebar__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="12" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/></svg></span>
         <span class="sidebar__link-text">Chatbot AI</span>
       </a>
     </nav>
     <div class="sidebar__footer">
-      <a href="/logout.php" id="nav-logout" class="sidebar__link" onclick="return confirm('Yakin logout?')" style="color:var(--clr-danger);">
+      <a href="<?= APP_BASE ?>/logout.php" id="nav-logout" class="sidebar__link" onclick="return confirm('Yakin logout?')" style="color:var(--clr-danger);">
         <span class="sidebar__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
         <span class="sidebar__link-text">Logout</span>
       </a>
@@ -92,12 +92,12 @@ $extraCss   = ['/assets/css/chat.css'];
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <nav class="topbar__breadcrumb" aria-label="Breadcrumb">
-        <a href="/dashboard.php">SAPG</a>
+        <a href="<?= APP_BASE ?>/dashboard.php">SAPG</a>
         <span class="topbar__breadcrumb-sep" aria-hidden="true">›</span>
         <span class="topbar__breadcrumb-current">Chatbot AI</span>
       </nav>
       <div style="display:flex;gap:var(--sp-3);align-items:center;">
-        <a href="/modules/chatbot/index.php?reset=1" class="btn btn--ghost btn--sm" title="Mulai percakapan baru">
+        <a href="<?= APP_BASE ?>/modules/chatbot/index.php?reset=1" class="btn btn--ghost btn--sm" title="Mulai percakapan baru">
           🔄 Chat Baru
         </a>
         <div class="topbar__user">
@@ -123,7 +123,7 @@ $extraCss   = ['/assets/css/chat.css'];
             </div>
           </div>
           <div class="chat-header__actions">
-            <a href="/modules/chatbot/index.php?reset=1" class="btn btn--ghost btn--sm" title="Chat Baru">
+            <a href="<?= APP_BASE ?>/modules/chatbot/index.php?reset=1" class="btn btn--ghost btn--sm" title="Chat Baru">
               ✨ Baru
             </a>
           </div>
@@ -209,7 +209,7 @@ $extraCss   = ['/assets/css/chat.css'];
   </div><!-- /.main-content -->
 </div><!-- /.app-layout -->
 
-<script src="/assets/js/main.js"></script>
+<script src="<?= APP_BASE ?>/assets/js/main.js"></script>
 <script>
 // ─── Chat UI Logic ─────────────────────────────────────────────────────
 (function () {
@@ -272,7 +272,7 @@ $extraCss   = ['/assets/css/chat.css'];
     let token = csrfMeta?.content || '';
     if (!token) {
       try {
-        const r = await fetch('/modules/produk/get_token.php');
+        const r = await fetch('<?= APP_BASE ?>/modules/produk/get_token.php');
         const d = await r.json();
         token = d.token || '';
       } catch(e) {}
@@ -283,7 +283,7 @@ $extraCss   = ['/assets/css/chat.css'];
       fd.append('message', message);
       fd.append('csrf_token', token);
 
-      const res = await fetch('/modules/chatbot/ask.php', {
+      const res = await fetch('<?= APP_BASE ?>/modules/chatbot/ask.php', {
         method: 'POST', body: fd,
       });
 

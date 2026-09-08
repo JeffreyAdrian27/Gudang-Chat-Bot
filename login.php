@@ -12,7 +12,7 @@ require_once __DIR__ . '/includes/functions.php';
 
 // Redirect jika sudah login
 if (isLoggedIn()) {
-    header('Location: ' . APP_BASE . 'Gudang%20Chat%20Bot/dashboard.php');
+    header('Location: ' . APP_BASE . '/dashboard.php');
     exit;
 }
 
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['login_at']  = time();
 
                 // Redirect ke halaman sebelumnya atau dashboard
-                $redirect = $_SESSION['redirect_after_login'] ?? '/dashboard.php';
+                $redirect = $_SESSION['redirect_after_login'] ?? APP_BASE . '/dashboard.php';
                 unset($_SESSION['redirect_after_login']);
                 header('Location: ' . $redirect);
                 exit;

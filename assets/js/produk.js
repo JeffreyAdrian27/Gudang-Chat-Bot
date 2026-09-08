@@ -149,7 +149,7 @@
 
       } else {
         if (data.redirect) {
-          window.location.href = data.redirect;
+          window.location.href = (data.redirect.startsWith('http') || (BASE && data.redirect.startsWith(BASE))) ? data.redirect : (BASE + data.redirect);
           return;
         }
         showError(data.message || 'Terjadi kesalahan. Coba lagi.');

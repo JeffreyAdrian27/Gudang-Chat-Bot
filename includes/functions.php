@@ -105,7 +105,10 @@ function renderPagination(int $totalPages, int $currentPage, string $baseUrl = '
         return '';
     }
 
-    $baseUrl = $baseUrl ?: strtok($_SERVER['REQUEST_URI'], '?');
+    if ($baseUrl !== '' && defined('APP_BASE') && APP_BASE !== '' && !str_starts_with($baseUrl, APP_BASE)) {
+        $baseUrl = APP_BASE . '/' . ltrim($baseUrl, '/');
+    }
+    $baseUrl = $baseUrl ?: strtok($_SERVER['REQUEST_URI'] ?? '', '?');
     $params  = $_GET;
     unset($params['page']);
     $query   = $params ? '&' . http_build_query($params) : '';

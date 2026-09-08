@@ -15,7 +15,7 @@ require_once dirname(__DIR__, 2) . '/includes/functions.php';
 
 // Pastikan login
 if (!isLoggedIn()) {
-    jsonResponse(false, 'Sesi habis. Silakan login kembali.', ['redirect' => '/login.php']);
+    jsonResponse(false, 'Sesi habis. Silakan login kembali.', ['redirect' => APP_BASE . '/login.php']);
 }
 
 // Hanya terima POST

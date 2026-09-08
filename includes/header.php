@@ -167,7 +167,13 @@ $B = APP_BASE; // shorthand, e.g. '/Gudang Chat Bot'
         <?php foreach ($breadcrumb as $crumb): ?>
           <span class="topbar__breadcrumb-sep" aria-hidden="true">›</span>
           <?php if (isset($crumb['url'])): ?>
-            <a href="<?= e($crumb['url']) ?>"><?= e($crumb['label']) ?></a>
+            <?php
+              $cUrl = $crumb['url'];
+              if (!str_starts_with($cUrl, 'http://') && !str_starts_with($cUrl, 'https://') && $B !== '' && !str_starts_with($cUrl, $B)) {
+                  $cUrl = $B . '/' . ltrim($cUrl, '/');
+              }
+            ?>
+            <a href="<?= e($cUrl) ?>"><?= e($crumb['label']) ?></a>
           <?php else: ?>
             <span class="topbar__breadcrumb-current"><?= e($crumb['label']) ?></span>
           <?php endif; ?>

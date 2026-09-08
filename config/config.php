@@ -58,17 +58,29 @@ define('APP_VERSION', '1.0.0');
 // ─── Base Path (ubah ke '' jika menggunakan virtual host di root) ─────────────
 // Deteksi otomatis dari SERVER jika tersedia, fallback ke .env atau default
 $_detectedBase = '';
-if (isset($_SERVER['SCRIPT_NAME'])) {
-    // Cari kedalaman folder relatif ke root
+if (!empty($_SERVER['SCRIPT_NAME'])) {
     $scriptPath = str_replace('\\', '/', $_SERVER['SCRIPT_NAME']);
-    // Root detection: cari apakah ada segment sebelum /index.php, /login.php, dsb
-    if (preg_match('#^(/[^/]+(?:/[^/]+)*)(?:/(?:index|login|logout|dashboard)\.php|/modules/|/assets/)#', $scriptPath, $m)) {
+    // Cari prefix path project sebelum file/folder root seperti /modules/, /assets/, /index.php, dsb.
+    // Menggunakan lazy quantifier `^(.*?)` agar tidak menangkap /modules/kategori sebelum /index.php
+    if (preg_match('#^(.*?)(?:/(?:index|login|logout|dashboard)\.php|/modules/|/assets/|/errors/|/includes/|/config/)#i', $scriptPath, $m)) {
         $_detectedBase = $m[1];
     }
 }
-define('APP_BASE',   env('APP_BASE',   $_detectedBase));   // contoh: '/Gudang Chat Bot'
+if ($_detectedBase === '' && !empty($_SERVER['DOCUMENT_ROOT'])) {
+    $docRoot = rtrim(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']), '/');
+    $appRoot = rtrim(str_replace('\\', '/', dirname(__DIR__)), '/');
+    if (stripos($appRoot, $docRoot) === 0) {
+        $_base = substr($appRoot, strlen($docRoot));
+        if ($_base !== false && $_base !== '') {
+            $_detectedBase = $_base;
+        }
+    }
+}
+$_detectedBase = rtrim($_detectedBase, '/');
+
+define('APP_BASE',   env('APP_BASE',   $_detectedBase));   // contoh: '/GudangChatbot2' atau ''
 define('ASSET_BASE', APP_BASE . '/assets');
-define('APP_URL',     env('APP_URL', 'http://localhost'));
+define('APP_URL',    env('APP_URL', 'http://localhost' . APP_BASE));
 
 // ─── Konstanta Keamanan ───────────────────────────────────────────────────────
 define('MAX_LOGIN_ATTEMPTS', 5);
