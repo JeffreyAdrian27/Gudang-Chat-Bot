@@ -49,24 +49,15 @@ define('DB_PASS', env('DB_PASS', ''));
 
 // ─── Konstanta Gemini AI ──────────────────────────────────────────────────────
 define('GEMINI_API_KEY', env('GEMINI_API_KEY', ''));
-define('GEMINI_ENDPOINT', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent');
+define('GEMINI_ENDPOINT', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent');
 
 // ─── Konstanta Aplikasi ───────────────────────────────────────────────────────
 define('APP_NAME',    'SAPG — Sistem Analisis Produk Gudang');
 define('APP_VERSION', '1.0.0');
 
-// ─── Base Path (ubah ke '' jika menggunakan virtual host di root) ─────────────
-// Deteksi otomatis dari SERVER jika tersedia, fallback ke .env atau default
-$_detectedBase = '';
-if (isset($_SERVER['SCRIPT_NAME'])) {
-    // Cari kedalaman folder relatif ke root
-    $scriptPath = str_replace('\\', '/', $_SERVER['SCRIPT_NAME']);
-    // Root detection: cari apakah ada segment sebelum /index.php, /login.php, dsb
-    if (preg_match('#^(/[^/]+(?:/[^/]+)*)(?:/(?:index|login|logout|dashboard)\.php|/modules/|/assets/)#', $scriptPath, $m)) {
-        $_detectedBase = $m[1];
-    }
-}
-define('APP_BASE',   env('APP_BASE',   $_detectedBase));   // contoh: '/Gudang Chat Bot'
+// ─── Base Path ────────────────────────────────────────────────────────────────
+// Atur secara hardcode di file .env menggunakan variabel APP_BASE
+define('APP_BASE', env('APP_BASE', '/GudangChatBot'));
 define('ASSET_BASE', APP_BASE . '/assets');
 define('APP_URL',     env('APP_URL', 'http://localhost'));
 

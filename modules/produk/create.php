@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $pageTitle  = 'Tambah Produk';
 $activePage = 'produk';
 $breadcrumb = [
-    ['label' => 'Produk', 'url' => '/modules/produk/index.php'],
+    ['label' => 'Produk', 'url' => '/GudangChatBot/modules/produk/index.php'],
     ['label' => 'Tambah'],
 ];
 
@@ -73,7 +73,7 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
     <h1>Tambah Produk</h1>
     <p>Daftarkan produk baru ke inventaris gudang.</p>
   </div>
-  <a href="/modules/produk/index.php" class="btn btn--ghost">← Kembali</a>
+  <a href="/GudangChatBot/modules/produk/index.php" class="btn btn--ghost">← Kembali</a>
 </div>
 
 <div class="card" style="max-width: 600px;">

@@ -81,11 +81,11 @@ require_once __DIR__ . '/includes/header.php';
     <p>Selamat datang kembali, <strong><?= e($_SESSION['username']) ?></strong> — ini ringkasan data gudang Anda hari ini.</p>
   </div>
   <div style="display:flex;gap:var(--sp-3);">
-    <a href="/modules/produk/index.php" class="btn btn--secondary">
+    <a href="/GudangChatBot/modules/produk/index.php" class="btn btn--secondary">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
       Kelola Produk
     </a>
-    <a href="/modules/chatbot/index.php" class="btn btn--primary">
+    <a href="/GudangChatBot/modules/chatbot/index.php" class="btn btn--primary">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       Tanya AI
     </a>
@@ -223,7 +223,7 @@ require_once __DIR__ . '/includes/header.php';
         <p style="font-size: var(--fs-sm); color: var(--clr-text-2); margin-bottom: var(--sp-5);">
           Tanya pertanyaan analitis tentang data gudang Anda secara real-time.
         </p>
-        <a href="/modules/chatbot/index.php" class="btn btn--primary" style="width: 100%; justify-content: center;">
+        <a href="/GudangChatBot/modules/chatbot/index.php" class="btn btn--primary" style="width: 100%; justify-content: center;">
           Mulai Percakapan →
         </a>
       </div>

@@ -38,8 +38,8 @@ $extraCss   = ['/assets/css/chat.css'];
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="/assets/css/style.css">
-  <link rel="stylesheet" href="/assets/css/chat.css">
+  <link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/style.css">
+  <link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/chat.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%236366f1'/><text y='22' x='6' font-size='18' fill='white' font-family='Inter,sans-serif' font-weight='800'>S</text></svg>">
 </head>
 <body>
@@ -97,7 +97,7 @@ $extraCss   = ['/assets/css/chat.css'];
         <span class="topbar__breadcrumb-current">Chatbot AI</span>
       </nav>
       <div style="display:flex;gap:var(--sp-3);align-items:center;">
-        <a href="/modules/chatbot/index.php?reset=1" class="btn btn--ghost btn--sm" title="Mulai percakapan baru">
+        <a href="/GudangChatBot/modules/chatbot/index.php?reset=1" class="btn btn--ghost btn--sm" title="Mulai percakapan baru">
           🔄 Chat Baru
         </a>
         <div class="topbar__user">
@@ -123,7 +123,7 @@ $extraCss   = ['/assets/css/chat.css'];
             </div>
           </div>
           <div class="chat-header__actions">
-            <a href="/modules/chatbot/index.php?reset=1" class="btn btn--ghost btn--sm" title="Chat Baru">
+            <a href="/GudangChatBot/modules/chatbot/index.php?reset=1" class="btn btn--ghost btn--sm" title="Chat Baru">
               ✨ Baru
             </a>
           </div>
@@ -209,7 +209,7 @@ $extraCss   = ['/assets/css/chat.css'];
   </div><!-- /.main-content -->
 </div><!-- /.app-layout -->
 
-<script src="/assets/js/main.js"></script>
+<script src="<?= APP_BASE ?>/assets/js/main.js"></script>
 <script>
 // ─── Chat UI Logic ─────────────────────────────────────────────────────
 (function () {
@@ -272,7 +272,7 @@ $extraCss   = ['/assets/css/chat.css'];
     let token = csrfMeta?.content || '';
     if (!token) {
       try {
-        const r = await fetch('/modules/produk/get_token.php');
+        const r = await fetch('<?= APP_BASE ?>/modules/produk/get_token.php');
         const d = await r.json();
         token = d.token || '';
       } catch(e) {}
@@ -283,7 +283,7 @@ $extraCss   = ['/assets/css/chat.css'];
       fd.append('message', message);
       fd.append('csrf_token', token);
 
-      const res = await fetch('/modules/chatbot/ask.php', {
+      const res = await fetch('<?= APP_BASE ?>/modules/chatbot/ask.php', {
         method: 'POST', body: fd,
       });
 
