@@ -292,11 +292,8 @@ $extraCss   = ['/assets/css/chat.css'];
       removeTyping(typingId);
 
       if (data.success) {
-        appendBubble('ai', data.answer);
-        // Render kartu gambar produk jika ada
-        if (data.products_preview && data.products_preview.length > 0) {
-          appendProductCards(data.products_preview);
-        }
+        // Tampilkan bubble jawaban AI beserta kartu produk jika ada (gambar & deskripsi bersebelahan)
+        appendBubble('ai', data.answer, false, data.products_preview || []);
         // Tampilkan chip saran lagi
         requestAnimationFrame(() => appendSuggestions());
         // Refresh CSRF token
@@ -318,39 +315,6 @@ $extraCss   = ['/assets/css/chat.css'];
   // ─── Helpers ───────────────────────────────────────────────────────
   function now() {
     return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-  }
-
-  function appendBubble(role, text, isError = false) {
-    const isUser = role === 'user';
-    const div = document.createElement('div');
-    div.className = `chat-msg chat-msg--${isUser ? 'user' : 'ai'}`;
-
-    const avatarText = isUser
-      ? '<?= strtoupper(substr(e($_SESSION['username']), 0, 1)) ?>'
-      : '🤖';
-
-    // Simple markdown-like formatting for AI responses
-    let formattedText = escapeHtml(text);
-    if (!isUser) {
-      formattedText = formattedText
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/`(.*?)`/g, '<code style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:3px;font-family:monospace;">$1</code>')
-        .replace(/\n/g, '<br>');
-    } else {
-      formattedText = formattedText.replace(/\n/g, '<br>');
-    }
-
-    div.innerHTML = `
-      <div class="chat-msg__avatar" aria-hidden="true">${avatarText}</div>
-      <div>
-        <div class="chat-msg__bubble${isError ? ' border-danger' : ''}">${formattedText}</div>
-        <div class="chat-msg__time" style="${isUser ? 'text-align:right;' : ''}">${now()}</div>
-      </div>
-    `;
-
-    messagesArea.appendChild(div);
-    scrollToBottom();
   }
 
   function showTyping() {
@@ -386,52 +350,121 @@ $extraCss   = ['/assets/css/chat.css'];
     return div.innerHTML;
   }
 
-  // ─── Render kartu gambar produk ─────────────────────────────────
-  function appendProductCards(products) {
-    // Hapus kartu sebelumnya jika ada
-    const prev = messagesArea.querySelector('.chat-product-gallery');
-    if (prev) prev.remove();
+  function appendBubble(role, text, isError = false, products = []) {
+    const isUser = role === 'user';
+    const div = document.createElement('div');
+    div.className = `chat-msg chat-msg--${isUser ? 'user' : 'ai'}`;
 
-    const gallery = document.createElement('div');
-    gallery.className = 'chat-product-gallery';
-    gallery.style.cssText = [
-      'display:flex', 'gap:10px', 'overflow-x:auto', 'padding:4px 0 8px 52px',
-      'scrollbar-width:thin', 'scrollbar-color:rgba(255,255,255,.2) transparent',
-      'animation:fadeIn .35s ease',
-    ].join(';');
+    const avatarText = isUser
+      ? '<?= strtoupper(substr(e($_SESSION['username']), 0, 1)) ?>'
+      : '🤖';
 
-    products.forEach(p => {
-      const card = document.createElement('div');
-      card.style.cssText = [
-        'flex-shrink:0', 'width:120px', 'border-radius:10px',
-        'background:rgba(255,255,255,.06)', 'border:1px solid rgba(255,255,255,.1)',
-        'overflow:hidden', 'transition:transform .2s',
-      ].join(';');
-      card.onmouseenter = () => card.style.transform = 'translateY(-2px)';
-      card.onmouseleave = () => card.style.transform = '';
+    // Formatting markdown untuk respon AI
+    let formattedText = escapeHtml(text);
+    if (!isUser) {
+      formattedText = formattedText
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:3px;font-family:monospace;">$1</code>')
+        .replace(/\n/g, '<br>');
+    } else {
+      formattedText = formattedText.replace(/\n/g, '<br>');
+    }
 
-      const img = document.createElement('img');
-      img.src = p.gambar_url;
-      img.alt = p.nama;
-      img.loading = 'lazy';
-      img.style.cssText = 'width:100%;height:88px;object-fit:cover;display:block;';
-      img.onerror = () => { card.style.display = 'none'; };
+    const contentDiv = document.createElement('div');
+    contentDiv.style.cssText = 'min-width:0;max-width:100%;';
 
-      const info = document.createElement('div');
-      info.style.cssText = 'padding:6px 8px;';
-      info.innerHTML = [
-        `<div style="font-size:11px;font-weight:600;line-height:1.3;color:var(--clr-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(p.nama)}">${escapeHtml(p.nama)}</div>`,
-        `<div style="font-size:10px;color:var(--clr-accent);margin-top:2px;">${escapeHtml(p.harga_fmt)}</div>`,
-        `<div style="font-size:10px;color:var(--clr-text-muted);margin-top:1px;">Stok: ${p.stok}</div>`,
-      ].join('');
+    const bubble = document.createElement('div');
+    bubble.className = `chat-msg__bubble${isError ? ' border-danger' : ''}`;
+    bubble.innerHTML = formattedText;
+    contentDiv.appendChild(bubble);
 
-      card.appendChild(img);
-      card.appendChild(info);
-      gallery.appendChild(card);
-    });
+    // Jika ada produk dengan gambar, tampilkan kartu produk (gambar & deskripsi bersebelahan)
+    if (products && products.length > 0) {
+      const prodList = document.createElement('div');
+      prodList.className = 'chat-product-list';
+      products.forEach(p => prodList.appendChild(buildProductCard(p)));
+      contentDiv.appendChild(prodList);
+    }
 
-    messagesArea.appendChild(gallery);
-    requestAnimationFrame(() => scrollToBottom());
+    const timeDiv = document.createElement('div');
+    timeDiv.className = 'chat-msg__time';
+    if (isUser) timeDiv.style.textAlign = 'right';
+    timeDiv.textContent = now();
+    contentDiv.appendChild(timeDiv);
+
+    const avatar = document.createElement('div');
+    avatar.className = 'chat-msg__avatar';
+    avatar.setAttribute('aria-hidden', 'true');
+    avatar.textContent = avatarText;
+
+    div.appendChild(avatar);
+    div.appendChild(contentDiv);
+
+    messagesArea.appendChild(div);
+    requestAnimationFrame(() => requestAnimationFrame(() => scrollToBottom()));
+  }
+
+  function buildProductCard(p) {
+    const card = document.createElement('div');
+    card.className = 'chat-prod-card';
+
+    // Gambar di sisi kiri
+    const imgWrap = document.createElement('div');
+    imgWrap.className = 'chat-prod-card__img-wrap';
+    imgWrap.title = 'Klik untuk memperbesar gambar';
+    imgWrap.onclick = (e) => {
+      e.stopPropagation();
+      openImageModal(p.gambar_url, p.nama);
+    };
+
+    const img = document.createElement('img');
+    img.src = p.gambar_url;
+    img.alt = p.nama;
+    img.loading = 'lazy';
+    img.onerror = () => { card.style.display = 'none'; };
+    imgWrap.appendChild(img);
+
+    // Deskripsi di sisi kanan (bersebelahan dengan gambar)
+    const body = document.createElement('div');
+    body.className = 'chat-prod-card__body';
+    body.innerHTML = [
+      p.kategori ? `<span class="chat-prod-card__cat">${escapeHtml(p.kategori)}</span>` : '',
+      `<h4 class="chat-prod-card__title" title="${escapeHtml(p.nama)}">${escapeHtml(p.nama)}</h4>`,
+      `<div class="chat-prod-card__meta">`,
+        `<span class="chat-prod-card__price">${escapeHtml(p.harga_fmt)}</span>`,
+        `<span class="chat-prod-card__stock ${p.stok <= 0 ? 'chat-prod-card__stock--empty' : ''}">${p.stok <= 0 ? 'Habis' : 'Stok: ' + p.stok}</span>`,
+      `</div>`,
+    ].join('');
+
+    card.appendChild(imgWrap);
+    card.appendChild(body);
+    return card;
+  }
+
+  function openImageModal(url, title) {
+    let modal = document.querySelector('.chat-img-modal');
+    if (modal) modal.remove();
+
+    modal = document.createElement('div');
+    modal.className = 'chat-img-modal';
+    modal.title = 'Klik untuk menutup';
+
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = title;
+
+    modal.appendChild(img);
+    modal.onclick = () => modal.remove();
+    document.body.appendChild(modal);
+
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        modal.remove();
+        document.removeEventListener('keydown', onKey);
+      }
+    };
+    document.addEventListener('keydown', onKey);
   }
 
   // ─── Suggestion chips setelah AI jawab ─────────────────────────

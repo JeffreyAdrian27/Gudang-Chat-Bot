@@ -321,11 +321,22 @@ try {
 }
 
 // ─── Response ──────────────────────────────────────────────────────
-// Kirim produk_preview hanya jika query adalah tentang daftar/semua produk
+// Kirim produk_preview jika query adalah tentang daftar/semua produk, atau produk tertentu disebutkan
 $isProductListQuery = preg_match('/daftar|semua produk|list produk|produk apa|tampilkan produk|seluruh produk/i', $msg);
+
+$relevantProducts = [];
+if ($isProductListQuery) {
+    $relevantProducts = $productsPreview;
+} else {
+    foreach ($productsPreview as $p) {
+        if (stripos($msg, $p['nama']) !== false || stripos($aiAnswer, $p['nama']) !== false) {
+            $relevantProducts[] = $p;
+        }
+    }
+}
 
 jsonResponse(true, 'OK', [
     'answer'           => $aiAnswer,
     'csrf_token'       => generateCsrfToken(),
-    'products_preview' => ($isProductListQuery && !empty($productsPreview)) ? $productsPreview : [],
+    'products_preview' => $relevantProducts,
 ]);
