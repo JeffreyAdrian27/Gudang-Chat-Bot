@@ -32,7 +32,7 @@ if (!validateCsrfToken($csrfToken)) {
 }
 
 // Validasi API key
-if (empty(GEMINI_API_KEY) || GEMINI_API_KEY === 'your_gemini_api_key_here') {
+if (empty(GEMINI_API_KEY)) {
     jsonResponse(false, 'API key Gemini belum dikonfigurasi. Silakan isi GEMINI_API_KEY di file .env.');
 }
 
