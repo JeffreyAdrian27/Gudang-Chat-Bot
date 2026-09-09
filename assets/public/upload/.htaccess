@@ -1,0 +1,12 @@
+﻿# Keamanan: larang eksekusi script di folder upload
+Options -ExecCGI -Indexes
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .phps .phar
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .phps .phar
+
+# Hanya izinkan file gambar
+<FilesMatch "(?i)\.(jpe?g|png|gif|webp)$">
+  Allow from all
+</FilesMatch>
+<FilesMatch "\.(?!jpe?g|png|gif|webp)[a-zA-Z0-9]+$">
+  Deny from all
+</FilesMatch>

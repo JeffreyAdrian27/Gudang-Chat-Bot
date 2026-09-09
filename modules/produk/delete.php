@@ -1,6 +1,6 @@
 <?php
 /**
- * SAPG — Hapus Produk
+ * SAPG – Hapus Produk (sekaligus hapus gambar jika ada)
  */
 
 declare(strict_types=1);
@@ -21,7 +21,7 @@ if (!$id) {
     exit;
 }
 
-$stmt = $db->prepare("SELECT nama_produk FROM produk WHERE id_produk = ?");
+$stmt = $db->prepare("SELECT nama_produk, gambar FROM produk WHERE id_produk = ?");
 $stmt->execute([$id]);
 $produk = $stmt->fetch();
 
@@ -31,7 +31,15 @@ if (!$produk) {
     exit;
 }
 
-// Hapus (stok_log akan terhapus CASCADE otomatis oleh FK)
+// Hapus file gambar jika ada
+if (!empty($produk['gambar'])) {
+    $gambarPath = dirname(__DIR__, 2) . '/assets/public/upload/' . $produk['gambar'];
+    if (file_exists($gambarPath)) {
+        @unlink($gambarPath);
+    }
+}
+
+// Hapus produk (stok_log akan terhapus CASCADE otomatis oleh FK)
 $db->prepare("DELETE FROM produk WHERE id_produk = ?")->execute([$id]);
 flashMessage('success', "Produk \"" . e($produk['nama_produk']) . "\" berhasil dihapus.");
 header('Location: ' . APP_BASE . '/modules/produk/index.php');

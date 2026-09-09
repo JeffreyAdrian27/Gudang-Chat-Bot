@@ -1,6 +1,6 @@
 <?php
 /**
- * SAPG — Chatbot AI UI
+ * SAPG - Chatbot AI UI
  */
 
 declare(strict_types=1);
@@ -32,7 +32,7 @@ $extraCss   = ['/assets/css/chat.css'];
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title><?= e($pageTitle) ?> — SAPG</title>
+  <title><?= e($pageTitle) ?> - SAPG</title>
   <meta name="description" content="Chatbot AI untuk analisis data gudang">
   <meta name="csrf-token" content="<?= generateCsrfToken() ?>">
 
@@ -46,7 +46,7 @@ $extraCss   = ['/assets/css/chat.css'];
 
 <div class="app-layout">
 
-  <!-- Sidebar (reuse from header pattern) -->
+  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar" role="navigation" aria-label="Menu utama">
     <div class="sidebar__brand">
       <div class="sidebar__logo" aria-hidden="true">S</div>
@@ -77,7 +77,7 @@ $extraCss   = ['/assets/css/chat.css'];
       </a>
     </nav>
     <div class="sidebar__footer">
-      <a href="/logout.php" id="nav-logout" class="sidebar__link" onclick="return confirm('Yakin logout?')" style="color:var(--clr-danger);">
+      <a href="<?= APP_BASE ?>/logout.php" id="nav-logout" class="sidebar__link" onclick="return confirm('Yakin logout?')" style="color:var(--clr-danger);">
         <span class="sidebar__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
         <span class="sidebar__link-text">Logout</span>
       </a>
@@ -92,17 +92,18 @@ $extraCss   = ['/assets/css/chat.css'];
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <nav class="topbar__breadcrumb" aria-label="Breadcrumb">
-        <a href="/dashboard.php">SAPG</a>
-        <span class="topbar__breadcrumb-sep" aria-hidden="true">›</span>
+        <a href="<?= APP_BASE ?>/dashboard.php">SAPG</a>
+        <span class="topbar__breadcrumb-sep" aria-hidden="true">&rsaquo;</span>
         <span class="topbar__breadcrumb-current">Chatbot AI</span>
       </nav>
       <div style="display:flex;gap:var(--sp-3);align-items:center;">
-        <a href="/GudangChatBot/modules/chatbot/index.php?reset=1" class="btn btn--ghost btn--sm" title="Mulai percakapan baru">
-          🔄 Chat Baru
+        <a href="<?= APP_BASE ?>/modules/chatbot/index.php?reset=1" class="btn btn--ghost btn--sm" title="Mulai percakapan baru">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+          Chat Baru
         </a>
         <div class="topbar__user">
-          <div class="topbar__avatar" aria-hidden="true"><?= strtoupper(substr(e($_SESSION['username']), 0, 1)) ?></div>
-          <span class="topbar__username"><?= e($_SESSION['username']) ?></span>
+          <div class="topbar__avatar" aria-hidden="true"><?= strtoupper(substr(e($_SESSION['username'] ?? 'U'), 0, 1)) ?></div>
+          <span class="topbar__username"><?= e($_SESSION['username'] ?? 'User') ?></span>
         </div>
       </div>
     </header>
@@ -114,40 +115,48 @@ $extraCss   = ['/assets/css/chat.css'];
 
         <!-- Chat Header -->
         <div class="chat-header">
-          <div class="chat-header__avatar" aria-hidden="true">🤖</div>
+          <div class="chat-header__avatar" aria-hidden="true">AI</div>
           <div class="chat-header__info">
             <div class="chat-header__name">SAPG AI Assistant</div>
             <div class="chat-header__status">
-              <span style="width:6px;height:6px;background:var(--clr-success);border-radius:50%;display:inline-block;"></span>
+              <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--clr-success);"></span>
               Siap menjawab pertanyaan analitis
             </div>
           </div>
-          <div class="chat-header__actions">
-            <a href="/GudangChatBot/modules/chatbot/index.php?reset=1" class="btn btn--ghost btn--sm" title="Chat Baru">
-              ✨ Baru
-            </a>
-          </div>
         </div>
 
-        <!-- Messages Area -->
-        <div class="chat-messages" id="chat-messages" role="log" aria-live="polite" aria-label="Riwayat percakapan">
+        <!-- Chat Messages Area -->
+        <div class="chat-messages" id="chat-messages" role="log" aria-live="polite">
 
           <?php if (empty($chatHistory)): ?>
-          <!-- Welcome State -->
+          <!-- Welcome Screen -->
           <div class="chat-welcome" id="chat-welcome">
-            <div class="chat-welcome__icon" aria-hidden="true">🤖</div>
+            <div class="chat-welcome__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="12" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/></svg>
+            </div>
             <h2 class="chat-welcome__title">SAPG AI Assistant</h2>
             <p class="chat-welcome__desc">
-              Saya dapat menjawab pertanyaan analitis tentang data produk gudang Anda secara real-time.
-              Coba tanyakan sesuatu!
+              Tanyakan apa saja seputar data stok, harga, dan pergerakan produk gudang Anda. Klik rekomendasi di bawah untuk mulai langsung.
             </p>
-            <div class="chat-suggestions" role="list" aria-label="Contoh pertanyaan">
-              <button class="chat-suggestion-btn" role="listitem" data-q="Berapa harga produk termurah?">💰 Produk termurah?</button>
-              <button class="chat-suggestion-btn" role="listitem" data-q="Produk apa saja yang stoknya habis?">📦 Stok habis?</button>
-              <button class="chat-suggestion-btn" role="listitem" data-q="Kategori apa yang paling sedikit produknya?">🗂️ Kategori paling sedikit?</button>
-              <button class="chat-suggestion-btn" role="listitem" data-q="Berapa total nilai stok gudang saat ini?">💎 Total nilai stok?</button>
-              <button class="chat-suggestion-btn" role="listitem" data-q="Tampilkan daftar semua produk">📋 Daftar semua produk</button>
-              <button class="chat-suggestion-btn" role="listitem" data-q="Produk mana yang stoknya paling banyak?">🏆 Stok terbanyak?</button>
+            <div class="chat-suggestions">
+              <button type="button" class="chat-suggestion-btn" data-q="Produk termurah apa yang ada di gudang?">
+                Produk termurah apa?
+              </button>
+              <button type="button" class="chat-suggestion-btn" data-q="Produk apa saja yang stoknya habis atau menipis?">
+                Produk yang stoknya habis?
+              </button>
+              <button type="button" class="chat-suggestion-btn" data-q="Kategori apa yang memiliki jumlah produk paling sedikit?">
+                Kategori dengan produk paling sedikit?
+              </button>
+              <button type="button" class="chat-suggestion-btn" data-q="Berapa total nilai estimasi stok gudang keseluruhan?">
+                Berapa total nilai stok gudang?
+              </button>
+              <button type="button" class="chat-suggestion-btn" data-q="Tampilkan 5 produk dengan stok terbanyak di gudang.">
+                5 produk stok terbanyak
+              </button>
+              <button type="button" class="chat-suggestion-btn" data-q="Berapa jumlah total produk dan total kategori yang terdaftar?">
+                Total produk dan kategori
+              </button>
             </div>
           </div>
 
@@ -157,7 +166,7 @@ $extraCss   = ['/assets/css/chat.css'];
               <?php if ($msg['role'] === 'user'): ?>
               <div class="chat-msg chat-msg--user">
                 <div class="chat-msg__avatar" aria-hidden="true">
-                  <?= strtoupper(substr(e($_SESSION['username']), 0, 1)) ?>
+                  <?= strtoupper(substr(e($_SESSION['username'] ?? 'U'), 0, 1)) ?>
                 </div>
                 <div>
                   <div class="chat-msg__bubble"><?= nl2br(e($msg['text'])) ?></div>
@@ -166,7 +175,7 @@ $extraCss   = ['/assets/css/chat.css'];
               </div>
               <?php elseif ($msg['role'] === 'model'): ?>
               <div class="chat-msg chat-msg--ai">
-                <div class="chat-msg__avatar" aria-hidden="true">🤖</div>
+                <div class="chat-msg__avatar" aria-hidden="true">AI</div>
                 <div>
                   <div class="chat-msg__bubble"><?= nl2br(e($msg['text'])) ?></div>
                   <div class="chat-msg__time"><?= isset($msg['time']) ? e($msg['time']) : '' ?></div>
@@ -174,6 +183,21 @@ $extraCss   = ['/assets/css/chat.css'];
               </div>
               <?php endif; ?>
             <?php endforeach; ?>
+
+            <!-- Render follow-up suggestions for existing history -->
+            <div class="chat-msg chat-msg--ai chat-post-suggestions-wrap" style="margin-top:4px;">
+              <div class="chat-msg__avatar" aria-hidden="true">AI</div>
+              <div style="max-width: 100%;">
+                <div class="chat-post-label">Pertanyaan lanjutan yang bisa Anda pilih:</div>
+                <div class="chat-post-suggestions">
+                  <button type="button" class="chat-suggestion-chip" data-q="Cek produk dengan stok menipis">Cek produk dengan stok menipis</button>
+                  <button type="button" class="chat-suggestion-chip" data-q="Produk termahal dan termurah">Produk termahal dan termurah</button>
+                  <button type="button" class="chat-suggestion-chip" data-q="Ringkasan stok per kategori">Ringkasan stok per kategori</button>
+                  <button type="button" class="chat-suggestion-chip" data-q="Total nilai estimasi aset gudang">Total nilai estimasi aset gudang</button>
+                  <button type="button" class="chat-suggestion-chip" data-q="Tampilkan 5 produk dengan stok terbanyak">Tampilkan 5 produk dengan stok terbanyak</button>
+                </div>
+              </div>
+            </div>
           <?php endif; ?>
 
         </div>
@@ -186,12 +210,11 @@ $extraCss   = ['/assets/css/chat.css'];
               <textarea
                 id="chat-input"
                 name="message"
-                placeholder="Tanya sesuatu tentang data gudang… (Enter untuk kirim, Shift+Enter untuk baris baru)"
+                placeholder="Tanya sesuatu tentang data gudang... (Enter kirim, Shift+Enter baris baru)"
                 rows="1"
                 maxlength="2000"
                 autocomplete="off"
                 aria-label="Pesan untuk AI"
-                data-auto-resize
               ></textarea>
             </div>
             <button type="submit" id="chat-send-btn" class="chat-send-btn" aria-label="Kirim pesan" disabled>
@@ -211,7 +234,7 @@ $extraCss   = ['/assets/css/chat.css'];
 
 <script src="<?= APP_BASE ?>/assets/js/main.js"></script>
 <script>
-// ─── Chat UI Logic ─────────────────────────────────────────────────────
+// Chat UI Logic
 (function () {
   'use strict';
 
@@ -222,15 +245,14 @@ $extraCss   = ['/assets/css/chat.css'];
   const welcomeDiv   = document.getElementById('chat-welcome');
   const csrfMeta     = document.querySelector('meta[name="csrf-token"]');
 
-  // Enable/disable send button based on input
+  // Input auto-resize & send-button toggle
   chatInput?.addEventListener('input', () => {
     sendBtn.disabled = !chatInput.value.trim();
-    // Auto-resize
     chatInput.style.height = 'auto';
     chatInput.style.height = Math.min(chatInput.scrollHeight, 160) + 'px';
   });
 
-  // Enter → send, Shift+Enter → newline
+  // Enter to send, Shift+Enter for new line
   chatInput?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -238,28 +260,44 @@ $extraCss   = ['/assets/css/chat.css'];
     }
   });
 
-  // Suggestion chips
+  // Helper function to send question directly
+  function sendQuestion(question) {
+    if (!question) return;
+    chatInput.value = question;
+    sendBtn.disabled = false;
+    chatForm.dispatchEvent(new Event('submit'));
+  }
+
+  // Bind click handler for welcome suggestion buttons
   document.querySelectorAll('.chat-suggestion-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      chatInput.value = btn.dataset.q || btn.textContent.trim().replace(/^[^\s]+ /, '');
-      sendBtn.disabled = false;
-      chatInput.focus();
+      sendQuestion(btn.dataset.q || btn.textContent.trim());
     });
   });
 
-  // Submit
+  // Bind click handler for any initial suggestion chips in HTML
+  document.querySelectorAll('.chat-suggestion-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      sendQuestion(btn.dataset.q || btn.textContent.trim());
+    });
+  });
+
+  // Submit Handler
   chatForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const message = chatInput.value.trim();
     if (!message) return;
 
-    // Hide welcome
+    // Remove any previous follow-up suggestions
+    document.querySelectorAll('.chat-post-suggestions-wrap').forEach(el => el.remove());
+
+    // Hide welcome screen
     if (welcomeDiv) welcomeDiv.style.display = 'none';
 
-    // Add user bubble
+    // Add user message bubble
     appendBubble('user', message);
 
-    // Clear input
+    // Reset input
     chatInput.value = '';
     chatInput.style.height = 'auto';
     sendBtn.disabled = true;
@@ -268,14 +306,14 @@ $extraCss   = ['/assets/css/chat.css'];
     const typingId = showTyping();
     scrollToBottom();
 
-    // Get fresh CSRF token
+    // Get CSRF token
     let token = csrfMeta?.content || '';
     if (!token) {
       try {
         const r = await fetch('<?= APP_BASE ?>/modules/produk/get_token.php');
         const d = await r.json();
         token = d.token || '';
-      } catch(e) {}
+      } catch(err) {}
     }
 
     try {
@@ -284,45 +322,49 @@ $extraCss   = ['/assets/css/chat.css'];
       fd.append('csrf_token', token);
 
       const res = await fetch('<?= APP_BASE ?>/modules/chatbot/ask.php', {
-        method: 'POST', body: fd,
+        method: 'POST',
+        body: fd,
       });
 
       const data = await res.json();
-
       removeTyping(typingId);
 
       if (data.success) {
+        // AI answer on success
         appendBubble('ai', data.answer);
-        // Refresh CSRF token
         if (data.csrf_token && csrfMeta) csrfMeta.content = data.csrf_token;
-      } else {
-        appendBubble('ai', '⚠️ ' + (data.message || 'Terjadi kesalahan. Silakan coba lagi.'), true);
-      }
 
+        // Render product cards if any products with images were mentioned
+        if (data.produk_gambar && data.produk_gambar.length > 0) {
+          appendProductImages(data.produk_gambar);
+        }
+
+        // Always show follow-up suggestions after AI responds successfully!
+        showPostResponseSuggestions();
+      } else {
+        appendBubble('ai', 'Gagal: ' + (data.message || 'Terjadi kesalahan. Silakan coba lagi.'), true);
+        showPostResponseSuggestions();
+      }
     } catch (err) {
       removeTyping(typingId);
-      appendBubble('ai', '⚠️ Gagal menghubungi server. Periksa koneksi Anda.', true);
+      appendBubble('ai', 'Gagal: Tidak dapat menghubungi server. Periksa koneksi Anda.', true);
+      showPostResponseSuggestions();
     }
 
     scrollToBottom();
     sendBtn.disabled = !chatInput.value.trim();
   });
 
-  // ─── Helpers ───────────────────────────────────────────────────────
-  function now() {
-    return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-  }
-
+  // Render text bubble
   function appendBubble(role, text, isError = false) {
     const isUser = role === 'user';
     const div = document.createElement('div');
     div.className = `chat-msg chat-msg--${isUser ? 'user' : 'ai'}`;
 
-    const avatarText = isUser
-      ? '<?= strtoupper(substr(e($_SESSION['username']), 0, 1)) ?>'
-      : '🤖';
+    const avatarHtml = isUser
+      ? '<div class="chat-msg__avatar" aria-hidden="true"><?= strtoupper(substr(e($_SESSION['username'] ?? 'U'), 0, 1)) ?></div>'
+      : '<div class="chat-msg__avatar" aria-hidden="true">AI</div>';
 
-    // Simple markdown-like formatting for AI responses
     let formattedText = escapeHtml(text);
     if (!isUser) {
       formattedText = formattedText
@@ -335,7 +377,7 @@ $extraCss   = ['/assets/css/chat.css'];
     }
 
     div.innerHTML = `
-      <div class="chat-msg__avatar" aria-hidden="true">${avatarText}</div>
+      ${avatarHtml}
       <div>
         <div class="chat-msg__bubble${isError ? ' border-danger' : ''}">${formattedText}</div>
         <div class="chat-msg__time" style="${isUser ? 'text-align:right;' : ''}">${now()}</div>
@@ -346,14 +388,114 @@ $extraCss   = ['/assets/css/chat.css'];
     scrollToBottom();
   }
 
+  // Render product image cards
+  function appendProductImages(products) {
+    if (!products || !products.length) return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'chat-msg chat-msg--ai';
+
+    const avatar = document.createElement('div');
+    avatar.className = 'chat-msg__avatar';
+    avatar.setAttribute('aria-hidden', 'true');
+    avatar.textContent = 'AI';
+
+    const content = document.createElement('div');
+    content.style.maxWidth = '100%';
+
+    const strip = document.createElement('div');
+    strip.className = 'chat-products-strip';
+
+    products.forEach(prod => {
+      if (!prod.gambar_url) return; // Only show products with an image
+
+      const card = document.createElement('div');
+      card.className = 'chat-product-card';
+
+      card.innerHTML = `
+        <img src="${escapeHtml(prod.gambar_url)}" alt="${escapeHtml(prod.nama)}" class="chat-product-img" onerror="this.closest('.chat-product-card').remove()">
+        <div class="chat-product-info">
+          <div class="chat-product-name" title="${escapeHtml(prod.nama)}">${escapeHtml(prod.nama)}</div>
+          <div class="chat-product-meta">
+            <span>${escapeHtml(prod.kategori || '')}</span>
+            <span>Stok: ${prod.stok ?? 0}</span>
+          </div>
+          <div class="chat-product-price">${escapeHtml(prod.harga_fmt || '')}</div>
+        </div>
+      `;
+      strip.appendChild(card);
+    });
+
+    if (strip.children.length === 0) return;
+
+    content.appendChild(strip);
+    wrap.appendChild(avatar);
+    wrap.appendChild(content);
+
+    messagesArea.appendChild(wrap);
+    scrollToBottom();
+  }
+
+  // Follow-up suggestion choices after AI response (BOTH success and error)
+  function showPostResponseSuggestions() {
+    document.querySelectorAll('.chat-post-suggestions-wrap').forEach(el => el.remove());
+
+    const wrap = document.createElement('div');
+    wrap.className = 'chat-msg chat-msg--ai chat-post-suggestions-wrap';
+
+    const avatar = document.createElement('div');
+    avatar.className = 'chat-msg__avatar';
+    avatar.setAttribute('aria-hidden', 'true');
+    avatar.textContent = 'AI';
+
+    const content = document.createElement('div');
+    content.style.maxWidth = '100%';
+
+    const label = document.createElement('div');
+    label.className = 'chat-post-label';
+    label.textContent = 'Pertanyaan lanjutan yang bisa Anda pilih:';
+
+    const strip = document.createElement('div');
+    strip.className = 'chat-post-suggestions';
+
+    const suggestions = [
+      'Cek produk dengan stok menipis',
+      'Produk termahal dan termurah',
+      'Ringkasan stok per kategori',
+      'Total nilai estimasi aset gudang',
+      'Tampilkan 5 produk dengan stok terbanyak'
+    ];
+
+    suggestions.forEach(text => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'chat-suggestion-chip';
+      chip.textContent = text;
+      chip.dataset.q = text;
+      chip.addEventListener('click', () => {
+        sendQuestion(text);
+      });
+      strip.appendChild(chip);
+    });
+
+    content.appendChild(label);
+    content.appendChild(strip);
+    wrap.appendChild(avatar);
+    wrap.appendChild(content);
+
+    messagesArea.appendChild(wrap);
+    scrollToBottom();
+  }
+
+  // Typing indicator
   function showTyping() {
     const id = 'typing-' + Date.now();
     const div = document.createElement('div');
     div.id = id;
     div.className = 'typing-indicator';
     div.innerHTML = `
-      <div class="chat-msg__avatar" aria-hidden="true">🤖</div>
-      <div class="typing-bubble" aria-label="AI sedang mengetik">
+      <div class="chat-msg__avatar" aria-hidden="true">AI</div>
+      <div class="typing-bubble" aria-label="AI sedang menganalisis">
         <div class="typing-dot"></div>
         <div class="typing-dot"></div>
         <div class="typing-dot"></div>
@@ -373,13 +515,18 @@ $extraCss   = ['/assets/css/chat.css'];
     messagesArea.scrollTop = messagesArea.scrollHeight;
   }
 
+  function now() {
+    return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  }
+
   function escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
-    div.appendChild(document.createTextNode(text));
+    div.appendChild(document.createTextNode(String(text)));
     return div.innerHTML;
   }
 
-  // Scroll to bottom on load
+  // Initial scroll
   scrollToBottom();
 
 })();

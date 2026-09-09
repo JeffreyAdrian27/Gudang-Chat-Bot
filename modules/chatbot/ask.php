@@ -1,6 +1,6 @@
 <?php
 /**
- * SAPG — Chatbot AJAX Endpoint
+ * SAPG -------------------------------------- Chatbot AJAX Endpoint
  * POST /modules/chatbot/ask.php
  *
  * Implementasi RAG sesuai PRD 5.4.2:
@@ -47,18 +47,18 @@ if (mb_strlen($message) > 2000) {
 
 $db = getDB();
 
-// ─── Langkah 1: Hitung total produk ────────────────────────────────
+//  Langkah 1: Hitung total produk ----------------------------------------------------------------------------
 $totalProduk = (int) $db->query("SELECT COUNT(*) FROM produk")->fetchColumn();
 $totalKategori = (int) $db->query("SELECT COUNT(*) FROM kategori")->fetchColumn();
 
-// ─── Langkah 2: Retrieval Strategy (RAG) ───────────────────────────
+//  Langkah 2: Retrieval Strategy (RAG) 
 $contextData = [];
 $msg = strtolower($message);
 
 if ($totalProduk < CHAT_MAX_ROWS_FULL) {
-    // ─── Mode: Kirim semua data (< 500 baris) ─────────────────────
+    //  Mode: Kirim semua data (< 500 baris) 
     $rows = $db->query(
-        "SELECT p.id_produk, p.nama_produk, p.stok, p.harga,
+        "SELECT p.id_produk, p.nama_produk, p.stok, p.harga, p.gambar,
                 k.nama_kategori
          FROM produk p
          JOIN kategori k ON p.id_kategori = k.id_kategori
@@ -76,11 +76,12 @@ if ($totalProduk < CHAT_MAX_ROWS_FULL) {
             'stok'      => (int) $r['stok'],
             'harga'     => (float) $r['harga'],
             'harga_fmt' => 'Rp ' . number_format((float)$r['harga'], 0, ',', '.'),
+            'gambar_url' => !empty($r['gambar']) ? APP_BASE . '/assets/public/upload/' . $r['gambar'] : null,
         ], $rows),
     ];
 
 } else {
-    // ─── Mode: Query terarah berdasarkan keyword ───────────────────
+    //  Mode: Query terarah berdasarkan keyword --------------------------------------
     $contextData = [
         'mode'         => 'aggregated',
         'total_produk' => $totalProduk,
@@ -153,7 +154,7 @@ if ($totalProduk < CHAT_MAX_ROWS_FULL) {
     }
 }
 
-// ─── Langkah 3: Bangun riwayat chat ───────────────────────────────
+//  Langkah 3: Bangun riwayat chat
 if (!isset($_SESSION['chat_history'])) {
     $_SESSION['chat_history'] = [];
 }
@@ -162,7 +163,7 @@ if (!isset($_SESSION['chat_history'])) {
 $maxTurns    = CHAT_MAX_HISTORY_TURNS * 2; // setiap turn = 2 pesan (user+model)
 $historySlice = array_slice($_SESSION['chat_history'], -$maxTurns);
 
-// ─── Langkah 4: Susun request ke Gemini ───────────────────────────
+// Langkah 4: Susun request ke Gemini
 $contextJson = json_encode($contextData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
 $contents = [];
@@ -219,7 +220,7 @@ $requestBody = [
     ],
 ];
 
-// ─── Langkah 5: Panggil Gemini via cURL ───────────────────────────
+// Langkah 5: Panggil Gemini via cURL
 $apiUrl = GEMINI_ENDPOINT . '?key=' . urlencode(GEMINI_API_KEY);
 
 $ch = curl_init($apiUrl);
@@ -236,9 +237,8 @@ curl_setopt_array($ch, [
 $rawResponse = curl_exec($ch);
 $httpCode    = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $curlError   = curl_error($ch);
-curl_close($ch);
+// curl_close($ch); // Unneeded & deprecated in PHP 8.5
 
-// ─── Langkah 6: Parse respons & error handling ────────────────────
 if ($curlError) {
     error_log('[GEMINI cURL ERROR] ' . $curlError);
     jsonResponse(false, 'Gagal menghubungi layanan AI. Periksa koneksi server.');
@@ -283,12 +283,28 @@ if (empty($aiAnswer)) {
 
 $aiAnswer = trim($aiAnswer);
 
-// ─── Langkah 7: Simpan ke session ─────────────────────────────────
+// Kumpulkan gambar produk yang nama-nya DISEBUTKAN dalam jawaban AI
+$produkGambar = [];
+if (isset($contextData['produk']) && is_array($contextData['produk'])) {
+    foreach ($contextData['produk'] as $p) {
+        if (!empty($p['gambar_url']) && mb_stripos($aiAnswer, $p['nama']) !== false) {
+            $produkGambar[] = [
+                'nama'       => $p['nama'],
+                'gambar_url' => $p['gambar_url'],
+                'kategori'   => $p['kategori'],
+                'stok'       => $p['stok'],
+                'harga_fmt'  => $p['harga_fmt'],
+            ];
+        }
+    }
+}
+// Maks 8 produk agar tidak memenuhi layar
+$produkGambar = array_slice($produkGambar, 0, 8);
+
 $timeNow = date('H:i');
 $_SESSION['chat_history'][] = ['role' => 'user',  'text' => $message,  'time' => $timeNow];
 $_SESSION['chat_history'][] = ['role' => 'model', 'text' => $aiAnswer, 'time' => $timeNow];
 
-// ─── Langkah 8 (Opsional): Simpan ke chat_log ─────────────────────
 try {
     $tokensIn  = $responseData['usageMetadata']['promptTokenCount']     ?? 0;
     $tokensOut = $responseData['usageMetadata']['candidatesTokenCount'] ?? 0;
@@ -301,8 +317,10 @@ try {
     error_log('[CHAT_LOG ERROR] ' . $e->getMessage());
 }
 
-// ─── Response ──────────────────────────────────────────────────────
 jsonResponse(true, 'OK', [
-    'answer'     => $aiAnswer,
-    'csrf_token' => generateCsrfToken(), // kirim token baru untuk request berikutnya
+    'answer'        => $aiAnswer,
+    'csrf_token'    => generateCsrfToken(), // kirim token baru untuk request berikutnya
+    'produk_gambar' => $produkGambar,       // gambar produk yang disebut dalam jawaban
 ]);
+
+

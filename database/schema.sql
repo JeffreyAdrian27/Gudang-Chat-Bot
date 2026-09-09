@@ -1,12 +1,12 @@
--- ============================================================
--- SAPG — Database Schema
+﻿-- ============================================================
+-- SAPG â€” Database Schema
 -- Jalankan file ini sekali untuk membuat struktur database.
 -- ============================================================
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
--- ─── Tabel users ─────────────────────────────────────────────
+-- â”€â”€â”€ Tabel users â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 CREATE TABLE IF NOT EXISTS users (
     id_user    INT          AUTO_INCREMENT PRIMARY KEY,
     username   VARCHAR(50)  NOT NULL UNIQUE,
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ─── Tabel kategori ───────────────────────────────────────────
+-- â”€â”€â”€ Tabel kategori â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 CREATE TABLE IF NOT EXISTS kategori (
     id_kategori  INT         AUTO_INCREMENT PRIMARY KEY,
     nama_kategori VARCHAR(100) NOT NULL UNIQUE,
@@ -25,13 +25,14 @@ CREATE TABLE IF NOT EXISTS kategori (
     updated_at   TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ─── Tabel produk ─────────────────────────────────────────────
+-- â”€â”€â”€ Tabel produk â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 CREATE TABLE IF NOT EXISTS produk (
     id_produk   INT            AUTO_INCREMENT PRIMARY KEY,
     nama_produk  VARCHAR(150)  NOT NULL,
     id_kategori  INT           NOT NULL,
     stok         INT           NOT NULL DEFAULT 0,
     harga        DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    gambar       VARCHAR(255)  NULL     DEFAULT NULL COMMENT 'nama file di assets/public/upload/',
     created_at   TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_kategori (id_kategori),
@@ -40,7 +41,7 @@ CREATE TABLE IF NOT EXISTS produk (
     FOREIGN KEY (id_kategori) REFERENCES kategori(id_kategori) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ─── Tabel stok_log ───────────────────────────────────────────
+-- â”€â”€â”€ Tabel stok_log â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 CREATE TABLE IF NOT EXISTS stok_log (
     id_log       INT       AUTO_INCREMENT PRIMARY KEY,
     id_produk    INT       NOT NULL,
@@ -53,7 +54,7 @@ CREATE TABLE IF NOT EXISTS stok_log (
     FOREIGN KEY (id_produk) REFERENCES produk(id_produk) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ─── Tabel chat_log ───────────────────────────────────────────
+-- â”€â”€â”€ Tabel chat_log â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 CREATE TABLE IF NOT EXISTS chat_log (
     id_chat    INT       AUTO_INCREMENT PRIMARY KEY,
     id_user    INT       NOT NULL,
@@ -67,3 +68,4 @@ CREATE TABLE IF NOT EXISTS chat_log (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
