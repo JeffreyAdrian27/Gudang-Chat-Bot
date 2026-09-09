@@ -334,7 +334,7 @@ $extraCss   = ['/assets/css/chat.css'];
         appendBubble('ai', data.answer);
         if (data.csrf_token && csrfMeta) csrfMeta.content = data.csrf_token;
 
-        // Render product cards if any products with images were mentioned
+        // Render product cards (side-to-side layout) if any products with images were mentioned
         if (data.produk_gambar && data.produk_gambar.length > 0) {
           appendProductImages(data.produk_gambar);
         }
@@ -388,7 +388,7 @@ $extraCss   = ['/assets/css/chat.css'];
     scrollToBottom();
   }
 
-  // Render product image cards
+  // Render product cards (SIDE-TO-SIDE layout: thumbnail on left, description on right)
   function appendProductImages(products) {
     if (!products || !products.length) return;
 
@@ -413,12 +413,12 @@ $extraCss   = ['/assets/css/chat.css'];
       card.className = 'chat-product-card';
 
       card.innerHTML = `
-        <img src="${escapeHtml(prod.gambar_url)}" alt="${escapeHtml(prod.nama)}" class="chat-product-img" onerror="this.closest('.chat-product-card').remove()">
-        <div class="chat-product-info">
+        <img src="${escapeHtml(prod.gambar_url)}" alt="${escapeHtml(prod.nama)}" class="chat-product-thumb" onerror="this.closest('.chat-product-card').remove()">
+        <div class="chat-product-content">
           <div class="chat-product-name" title="${escapeHtml(prod.nama)}">${escapeHtml(prod.nama)}</div>
           <div class="chat-product-meta">
-            <span>${escapeHtml(prod.kategori || '')}</span>
-            <span>Stok: ${prod.stok ?? 0}</span>
+            <span class="chat-product-badge">${escapeHtml(prod.kategori || 'Umum')}</span>
+            <span class="chat-product-stok">Stok: <strong>${prod.stok ?? 0}</strong></span>
           </div>
           <div class="chat-product-price">${escapeHtml(prod.harga_fmt || '')}</div>
         </div>

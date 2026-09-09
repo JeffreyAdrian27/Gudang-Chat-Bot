@@ -288,7 +288,7 @@
   font-size: 11px;
   font-weight: 600;
   color: var(--clr-text-3);
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .chat-suggestion-chip {
@@ -312,49 +312,59 @@
   transform: translateY(-1px);
 }
 
-/* Product Cards Carousel / Grid in Chat */
+/* Product Cards Strip - SIDE-TO-SIDE (Horizontal) Layout */
 .chat-products-strip {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 10px;
   animation: fadeInUp 0.3s ease;
+  max-width: 100%;
 }
 
 .chat-product-card {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
   background: var(--clr-surface-2);
   border: 1px solid var(--clr-border);
-  border-radius: 8px;
-  overflow: hidden;
-  width: 135px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  border-radius: 10px;
+  padding: 8px 12px;
+  min-width: 250px;
+  max-width: 320px;
+  flex: 1 1 250px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .chat-product-card:hover {
   transform: translateY(-2px);
   border-color: var(--clr-primary);
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.18);
 }
 
-.chat-product-img {
-  width: 100%;
-  height: 90px;
+.chat-product-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
   object-fit: cover;
   background: #0f1422;
+  border: 1px solid var(--clr-border);
+  flex-shrink: 0;
   display: block;
 }
 
-.chat-product-info {
-  padding: 8px;
+.chat-product-content {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
 }
 
 .chat-product-name {
-  font-size: 11.5px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--clr-text);
   white-space: nowrap;
@@ -363,17 +373,31 @@
 }
 
 .chat-product-meta {
-  font-size: 10px;
-  color: var(--clr-text-3);
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--clr-text-3);
+}
+
+.chat-product-badge {
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+  font-size: 10.5px;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.chat-product-stok {
+  white-space: nowrap;
 }
 
 .chat-product-price {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--clr-primary-l, #818cf8);
-  margin-top: 2px;
 }
 
 /* Chat Input Area */
@@ -463,4 +487,5 @@
   .chat-layout { height: calc(100vh - 64px - var(--sp-8) - 60px); }
   .chat-msg { max-width: 92%; }
   .chat-messages { padding: var(--sp-4); }
+  .chat-product-card { min-width: 100%; max-width: 100%; }
 }
