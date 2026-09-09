@@ -1,5 +1,8 @@
 # Environment & Secrets
 .env
+.env.*
+*.env
+**/.env
 config/secrets.php
 
 # Logs

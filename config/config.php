@@ -49,7 +49,7 @@ define('DB_PASS', env('DB_PASS', ''));
 
 // ─── Konstanta Gemini AI ──────────────────────────────────────────────────────
 define('GEMINI_API_KEY', env('GEMINI_API_KEY', ''));
-define('GEMINI_ENDPOINT', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent');
+define('GEMINI_ENDPOINT', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent');
 
 // ─── Konstanta Aplikasi ───────────────────────────────────────────────────────
 define('APP_NAME',    'SAPG — Sistem Analisis Produk Gudang');
