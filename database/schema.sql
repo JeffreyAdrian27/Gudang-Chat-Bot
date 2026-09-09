@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS produk (
     id_kategori  INT           NOT NULL,
     stok         INT           NOT NULL DEFAULT 0,
     harga        DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    gambar       VARCHAR(255)  NULL DEFAULT NULL,
     created_at   TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_kategori (id_kategori),

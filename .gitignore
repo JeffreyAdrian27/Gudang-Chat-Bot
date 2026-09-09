@@ -22,3 +22,7 @@ vendor/
 
 # Upload temp
 assets/img/uploads/tmp/
+
+# Upload gambar produk (jangan push file binary ke repo)
+assets/public/upload/*
+!assets/public/upload/.gitkeep

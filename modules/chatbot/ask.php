@@ -58,12 +58,15 @@ $msg = strtolower($message);
 if ($totalProduk < CHAT_MAX_ROWS_FULL) {
     // ─── Mode: Kirim semua data (< 500 baris) ─────────────────────
     $rows = $db->query(
-        "SELECT p.id_produk, p.nama_produk, p.stok, p.harga,
+        "SELECT p.id_produk, p.nama_produk, p.stok, p.harga, p.gambar,
                 k.nama_kategori
          FROM produk p
          JOIN kategori k ON p.id_kategori = k.id_kategori
          ORDER BY k.nama_kategori, p.nama_produk"
     )->fetchAll();
+
+    $uploadBaseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
+                   . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . APP_BASE . '/assets/public/upload/';
 
     $contextData = [
         'mode'         => 'full_data',
@@ -76,6 +79,7 @@ if ($totalProduk < CHAT_MAX_ROWS_FULL) {
             'stok'      => (int) $r['stok'],
             'harga'     => (float) $r['harga'],
             'harga_fmt' => 'Rp ' . number_format((float)$r['harga'], 0, ',', '.'),
+            'gambar_url'=> $r['gambar'] ? $uploadBaseUrl . $r['gambar'] : null,
         ], $rows),
     ];
 

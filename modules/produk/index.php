@@ -40,9 +40,9 @@ $totalRows = (int) $countStmt->fetchColumn();
 
 $pag = paginate($totalRows, $perPage);
 
-// Fetch produk
+// Fetch produk (include gambar)
 $stmt = $db->prepare(
-    "SELECT p.id_produk, p.nama_produk, p.stok, p.harga,
+    "SELECT p.id_produk, p.nama_produk, p.stok, p.harga, p.gambar,
             p.updated_at, k.nama_kategori, k.id_kategori
      FROM produk p
      JOIN kategori k ON p.id_kategori = k.id_kategori
@@ -58,6 +58,8 @@ $allKategoris = $db->query(
     "SELECT id_kategori, nama_kategori FROM kategori ORDER BY nama_kategori ASC"
 )->fetchAll();
 
+$uploadBase = APP_BASE . '/assets/public/upload/';
+
 // ─── Page Variables ────────────────────────────────────────────────
 $pageTitle  = 'Kelola Produk';
 $activePage = 'produk';
@@ -72,7 +74,7 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
     <h1>Kelola Produk</h1>
     <p>Total <strong><?= formatAngka($totalRows) ?></strong> produk<?= $search || $filterKat ? ' (difilter)' : '' ?>.</p>
   </div>
-  <a href="/GudangChatBot/modules/produk/create.php" id="btn-tambah-produk" class="btn btn--primary">
+  <a href="<?= APP_BASE ?>/modules/produk/create.php" id="btn-tambah-produk" class="btn btn--primary">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     Tambah Produk
   </a>
@@ -95,7 +97,7 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
   </select>
   <button type="submit" class="btn btn--secondary">Filter</button>
   <?php if ($search || $filterKat): ?>
-    <a href="/GudangChatBot/modules/produk/index.php" class="btn btn--ghost">Reset</a>
+    <a href="<?= APP_BASE ?>/modules/produk/index.php" class="btn btn--ghost">Reset</a>
   <?php endif; ?>
 </form>
 
@@ -106,6 +108,7 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
       <thead>
         <tr>
           <th style="width: 48px;">#</th>
+          <th style="width: 60px;">Gambar</th>
           <th>Nama Produk</th>
           <th>Kategori</th>
           <th>Stok</th>
@@ -117,7 +120,7 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
       <tbody id="produk-tbody">
         <?php if (empty($produks)): ?>
         <tr>
-          <td colspan="7">
+          <td colspan="8">
             <div class="empty-state">
               <div class="empty-state__icon">📦</div>
               <p class="empty-state__title">Tidak ada produk</p>
@@ -130,6 +133,17 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
           <?php foreach ($produks as $p): $no++; ?>
           <tr id="row-produk-<?= $p['id_produk'] ?>">
             <td class="text-muted"><?= $no ?></td>
+            <td>
+              <?php if ($p['gambar']): ?>
+                <img src="<?= $uploadBase . e($p['gambar']) ?>"
+                     alt="<?= e($p['nama_produk']) ?>"
+                     style="width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,.1);"
+                     loading="lazy">
+              <?php else: ?>
+                <div style="width:44px;height:44px;border-radius:6px;background:rgba(255,255,255,.05);
+                            display:flex;align-items:center;justify-content:center;font-size:20px;">📦</div>
+              <?php endif; ?>
+            </td>
             <td class="fw-600"><?= e($p['nama_produk']) ?></td>
             <td><span class="badge badge--neutral"><?= e($p['nama_kategori']) ?></span></td>
             <td id="stok-<?= $p['id_produk'] ?>"><?= stokBadge((int) $p['stok']) ?></td>
@@ -150,14 +164,14 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
                   Stok
                 </button>
                 <!-- Edit -->
-                <a href="/GudangChatBot/modules/produk/edit.php?id=<?= $p['id_produk'] ?>"
+                <a href="<?= APP_BASE ?>/modules/produk/edit.php?id=<?= $p['id_produk'] ?>"
                    class="btn btn--sm btn--secondary"
                    id="btn-edit-produk-<?= $p['id_produk'] ?>">
                   <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   Edit
                 </a>
                 <!-- Hapus -->
-                <a href="/GudangChatBot/modules/produk/delete.php?id=<?= $p['id_produk'] ?>"
+                <a href="<?= APP_BASE ?>/modules/produk/delete.php?id=<?= $p['id_produk'] ?>"
                    class="btn btn--sm btn--danger"
                    id="btn-del-produk-<?= $p['id_produk'] ?>"
                    data-confirm="Hapus produk &quot;<?= e($p['nama_produk']) ?>&quot;? Tindakan ini tidak bisa dibatalkan.">
@@ -174,7 +188,7 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
   </div>
 </div>
 
-<?= renderPagination($pag['total_pages'], $pag['current_page'], '/modules/produk/index.php') ?>
+<?= renderPagination($pag['total_pages'], $pag['current_page'], APP_BASE . '/modules/produk/index.php') ?>
 
 <!-- ═══ Modal Tambah Stok ════════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-stok" role="dialog" aria-modal="true" aria-labelledby="modal-stok-title">

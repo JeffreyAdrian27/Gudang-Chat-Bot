@@ -293,6 +293,7 @@ $extraCss   = ['/assets/css/chat.css'];
 
       if (data.success) {
         appendBubble('ai', data.answer);
+        appendSuggestions();
         // Refresh CSRF token
         if (data.csrf_token && csrfMeta) csrfMeta.content = data.csrf_token;
       } else {
@@ -377,6 +378,48 @@ $extraCss   = ['/assets/css/chat.css'];
     const div = document.createElement('div');
     div.appendChild(document.createTextNode(text));
     return div.innerHTML;
+  }
+
+  // ─── Suggestion chips setelah AI jawab ─────────────────────────
+  const suggestions = [
+    { label: '💰 Produk termurah?',      q: 'Berapa harga produk termurah?' },
+    { label: '📦 Stok habis?',           q: 'Produk apa saja yang stoknya habis?' },
+    { label: '🗂️ Distribusi kategori?',  q: 'Kategori apa yang paling sedikit produknya?' },
+    { label: '💎 Total nilai stok?',      q: 'Berapa total nilai stok gudang saat ini?' },
+    { label: '🏆 Stok terbanyak?',        q: 'Produk mana yang stoknya paling banyak?' },
+    { label: '📋 Daftar semua produk',    q: 'Tampilkan daftar semua produk' },
+  ];
+
+  function appendSuggestions() {
+    // Hapus chip sebelumnya agar tidak menumpuk
+    const prev = messagesArea.querySelector('.chat-follow-up-chips');
+    if (prev) prev.remove();
+
+    const wrap = document.createElement('div');
+    wrap.className = 'chat-follow-up-chips';
+    wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;padding:8px 0 4px 52px;animation:fadeIn .3s ease;';
+
+    suggestions.forEach(s => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chat-suggestion-btn';
+      btn.textContent = s.label;
+      btn.dataset.q = s.q;
+      btn.addEventListener('click', () => {
+        chatInput.value = s.q;
+        sendBtn.disabled = false;
+        chatInput.focus();
+        // Auto-scroll juga
+        chatInput.style.height = 'auto';
+        chatInput.style.height = Math.min(chatInput.scrollHeight, 160) + 'px';
+        // Hapus chip setelah dipilih
+        wrap.remove();
+      });
+      wrap.appendChild(btn);
+    });
+
+    messagesArea.appendChild(wrap);
+    scrollToBottom();
   }
 
   // Scroll to bottom on load

@@ -272,3 +272,20 @@
   .chat-msg { max-width: 90%; }
   .chat-messages { padding: var(--sp-4); }
 }
+
+/* ─── Follow-up Suggestion Chips Animation ─────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.chat-follow-up-chips .chat-suggestion-btn {
+  animation: fadeIn .25s ease both;
+}
+
+.chat-follow-up-chips .chat-suggestion-btn:nth-child(1) { animation-delay: 0ms; }
+.chat-follow-up-chips .chat-suggestion-btn:nth-child(2) { animation-delay: 50ms; }
+.chat-follow-up-chips .chat-suggestion-btn:nth-child(3) { animation-delay: 100ms; }
+.chat-follow-up-chips .chat-suggestion-btn:nth-child(4) { animation-delay: 150ms; }
+.chat-follow-up-chips .chat-suggestion-btn:nth-child(5) { animation-delay: 200ms; }
+.chat-follow-up-chips .chat-suggestion-btn:nth-child(6) { animation-delay: 250ms; }
