@@ -57,21 +57,21 @@ $extraCss   = ['/assets/css/chat.css'];
     </div>
     <nav class="sidebar__nav">
       <div class="sidebar__section-label">Menu</div>
-      <a href="/dashboard.php" class="sidebar__link" id="nav-dashboard">
+      <a href="<?= APP_BASE ?>/dashboard.php" class="sidebar__link" id="nav-dashboard">
         <span class="sidebar__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span>
         <span class="sidebar__link-text">Dashboard</span>
       </a>
       <div class="sidebar__section-label">Manajemen</div>
-      <a href="/modules/kategori/index.php" class="sidebar__link" id="nav-kategori">
+      <a href="<?= APP_BASE ?>/modules/kategori/index.php" class="sidebar__link" id="nav-kategori">
         <span class="sidebar__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
         <span class="sidebar__link-text">Kategori</span>
       </a>
-      <a href="/modules/produk/index.php" class="sidebar__link" id="nav-produk">
+      <a href="<?= APP_BASE ?>/modules/produk/index.php" class="sidebar__link" id="nav-produk">
         <span class="sidebar__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span>
         <span class="sidebar__link-text">Produk</span>
       </a>
       <div class="sidebar__section-label">AI</div>
-      <a href="/modules/chatbot/index.php" class="sidebar__link active" id="nav-chatbot" aria-current="page">
+      <a href="<?= APP_BASE ?>/modules/chatbot/index.php" class="sidebar__link active" id="nav-chatbot" aria-current="page">
         <span class="sidebar__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="12" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/></svg></span>
         <span class="sidebar__link-text">Chatbot AI</span>
       </a>
