@@ -293,11 +293,17 @@ $extraCss   = ['/assets/css/chat.css'];
 
       if (data.success) {
         appendBubble('ai', data.answer);
-        appendSuggestions();
+        // Render kartu gambar produk jika ada
+        if (data.products_preview && data.products_preview.length > 0) {
+          appendProductCards(data.products_preview);
+        }
+        // Tampilkan chip saran lagi
+        requestAnimationFrame(() => appendSuggestions());
         // Refresh CSRF token
         if (data.csrf_token && csrfMeta) csrfMeta.content = data.csrf_token;
       } else {
         appendBubble('ai', '⚠️ ' + (data.message || 'Terjadi kesalahan. Silakan coba lagi.'), true);
+        requestAnimationFrame(() => appendSuggestions());
       }
 
     } catch (err) {
@@ -380,46 +386,98 @@ $extraCss   = ['/assets/css/chat.css'];
     return div.innerHTML;
   }
 
+  // ─── Render kartu gambar produk ─────────────────────────────────
+  function appendProductCards(products) {
+    // Hapus kartu sebelumnya jika ada
+    const prev = messagesArea.querySelector('.chat-product-gallery');
+    if (prev) prev.remove();
+
+    const gallery = document.createElement('div');
+    gallery.className = 'chat-product-gallery';
+    gallery.style.cssText = [
+      'display:flex', 'gap:10px', 'overflow-x:auto', 'padding:4px 0 8px 52px',
+      'scrollbar-width:thin', 'scrollbar-color:rgba(255,255,255,.2) transparent',
+      'animation:fadeIn .35s ease',
+    ].join(';');
+
+    products.forEach(p => {
+      const card = document.createElement('div');
+      card.style.cssText = [
+        'flex-shrink:0', 'width:120px', 'border-radius:10px',
+        'background:rgba(255,255,255,.06)', 'border:1px solid rgba(255,255,255,.1)',
+        'overflow:hidden', 'transition:transform .2s',
+      ].join(';');
+      card.onmouseenter = () => card.style.transform = 'translateY(-2px)';
+      card.onmouseleave = () => card.style.transform = '';
+
+      const img = document.createElement('img');
+      img.src = p.gambar_url;
+      img.alt = p.nama;
+      img.loading = 'lazy';
+      img.style.cssText = 'width:100%;height:88px;object-fit:cover;display:block;';
+      img.onerror = () => { card.style.display = 'none'; };
+
+      const info = document.createElement('div');
+      info.style.cssText = 'padding:6px 8px;';
+      info.innerHTML = [
+        `<div style="font-size:11px;font-weight:600;line-height:1.3;color:var(--clr-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(p.nama)}">${escapeHtml(p.nama)}</div>`,
+        `<div style="font-size:10px;color:var(--clr-accent);margin-top:2px;">${escapeHtml(p.harga_fmt)}</div>`,
+        `<div style="font-size:10px;color:var(--clr-text-muted);margin-top:1px;">Stok: ${p.stok}</div>`,
+      ].join('');
+
+      card.appendChild(img);
+      card.appendChild(info);
+      gallery.appendChild(card);
+    });
+
+    messagesArea.appendChild(gallery);
+    requestAnimationFrame(() => scrollToBottom());
+  }
+
   // ─── Suggestion chips setelah AI jawab ─────────────────────────
   const suggestions = [
-    { label: '💰 Produk termurah?',      q: 'Berapa harga produk termurah?' },
-    { label: '📦 Stok habis?',           q: 'Produk apa saja yang stoknya habis?' },
-    { label: '🗂️ Distribusi kategori?',  q: 'Kategori apa yang paling sedikit produknya?' },
-    { label: '💎 Total nilai stok?',      q: 'Berapa total nilai stok gudang saat ini?' },
-    { label: '🏆 Stok terbanyak?',        q: 'Produk mana yang stoknya paling banyak?' },
-    { label: '📋 Daftar semua produk',    q: 'Tampilkan daftar semua produk' },
+    { label: '💰 Produk termurah?',         q: 'Berapa harga produk termurah?' },
+    { label: '📦 Stok habis?',              q: 'Produk apa saja yang stoknya habis?' },
+    { label: '🗂️ Distribusi kategori?',     q: 'Kategori apa yang paling sedikit produknya?' },
+    { label: '💎 Total nilai stok?',         q: 'Berapa total nilai stok gudang saat ini?' },
+    { label: '🏆 Stok terbanyak?',           q: 'Produk mana yang stoknya paling banyak?' },
+    { label: '📋 Tampilkan daftar produk',   q: 'Tampilkan daftar semua produk' },
   ];
 
   function appendSuggestions() {
-    // Hapus chip sebelumnya agar tidak menumpuk
+    // Hapus chip lama agar tidak menumpuk
     const prev = messagesArea.querySelector('.chat-follow-up-chips');
     if (prev) prev.remove();
 
     const wrap = document.createElement('div');
     wrap.className = 'chat-follow-up-chips';
-    wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;padding:8px 0 4px 52px;animation:fadeIn .3s ease;';
+    wrap.setAttribute('aria-label', 'Pilih pertanyaan lanjutan');
+    wrap.style.cssText = [
+      'display:flex', 'flex-wrap:wrap', 'gap:8px',
+      'padding:6px 0 2px 52px', 'align-self:flex-start', 'width:100%',
+    ].join(';');
 
-    suggestions.forEach(s => {
+    suggestions.forEach((s, i) => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'chat-suggestion-btn';
       btn.textContent = s.label;
       btn.dataset.q = s.q;
+      btn.style.animationDelay = (i * 50) + 'ms';
       btn.addEventListener('click', () => {
         chatInput.value = s.q;
         sendBtn.disabled = false;
         chatInput.focus();
-        // Auto-scroll juga
         chatInput.style.height = 'auto';
         chatInput.style.height = Math.min(chatInput.scrollHeight, 160) + 'px';
-        // Hapus chip setelah dipilih
         wrap.remove();
       });
       wrap.appendChild(btn);
     });
 
     messagesArea.appendChild(wrap);
-    scrollToBottom();
+    // Tunggu dua frame agar browser selesai paint sebelum scroll
+    requestAnimationFrame(() => requestAnimationFrame(() => scrollToBottom()));
   }
 
   // Scroll to bottom on load

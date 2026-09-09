@@ -289,3 +289,17 @@
 .chat-follow-up-chips .chat-suggestion-btn:nth-child(4) { animation-delay: 150ms; }
 .chat-follow-up-chips .chat-suggestion-btn:nth-child(5) { animation-delay: 200ms; }
 .chat-follow-up-chips .chat-suggestion-btn:nth-child(6) { animation-delay: 250ms; }
+
+/* ─── Product Image Gallery (in chat) ─────────────────────────── */
+.chat-product-gallery {
+  align-self: flex-start;
+  width: calc(100% - 52px);
+  margin-left: 52px;
+}
+
+.chat-product-gallery::-webkit-scrollbar { height: 4px; }
+.chat-product-gallery::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,.2);
+  border-radius: 2px;
+}
+

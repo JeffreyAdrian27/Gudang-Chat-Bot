@@ -54,6 +54,8 @@ $totalKategori = (int) $db->query("SELECT COUNT(*) FROM kategori")->fetchColumn(
 // ─── Langkah 2: Retrieval Strategy (RAG) ───────────────────────────
 $contextData = [];
 $msg = strtolower($message);
+// Produk bergambar untuk dikirim kembali ke frontend (render UI)
+$productsPreview = [];
 
 if ($totalProduk < CHAT_MAX_ROWS_FULL) {
     // ─── Mode: Kirim semua data (< 500 baris) ─────────────────────
@@ -68,11 +70,24 @@ if ($totalProduk < CHAT_MAX_ROWS_FULL) {
     $uploadBaseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
                    . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . APP_BASE . '/assets/public/upload/';
 
+    // Kumpulkan produk bergambar untuk preview di UI chatbot
+    foreach ($rows as $r) {
+        if ($r['gambar']) {
+            $productsPreview[] = [
+                'nama'       => $r['nama_produk'],
+                'kategori'   => $r['nama_kategori'],
+                'stok'       => (int) $r['stok'],
+                'harga_fmt'  => 'Rp ' . number_format((float)$r['harga'], 0, ',', '.'),
+                'gambar_url' => $uploadBaseUrl . $r['gambar'],
+            ];
+        }
+    }
+
     $contextData = [
-        'mode'         => 'full_data',
-        'total_produk' => $totalProduk,
+        'mode'           => 'full_data',
+        'total_produk'   => $totalProduk,
         'total_kategori' => $totalKategori,
-        'produk'       => array_map(fn($r) => [
+        'produk'         => array_map(fn($r) => [
             'id'        => $r['id_produk'],
             'nama'      => $r['nama_produk'],
             'kategori'  => $r['nama_kategori'],
@@ -306,7 +321,11 @@ try {
 }
 
 // ─── Response ──────────────────────────────────────────────────────
+// Kirim produk_preview hanya jika query adalah tentang daftar/semua produk
+$isProductListQuery = preg_match('/daftar|semua produk|list produk|produk apa|tampilkan produk|seluruh produk/i', $msg);
+
 jsonResponse(true, 'OK', [
-    'answer'     => $aiAnswer,
-    'csrf_token' => generateCsrfToken(), // kirim token baru untuk request berikutnya
+    'answer'           => $aiAnswer,
+    'csrf_token'       => generateCsrfToken(),
+    'products_preview' => ($isProductListQuery && !empty($productsPreview)) ? $productsPreview : [],
 ]);
